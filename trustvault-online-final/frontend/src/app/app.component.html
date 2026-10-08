@@ -1,0 +1,5 @@
+<router-outlet></router-outlet>
+<div class="toast-stack">
+  <div class="toast" *ngFor="let t of toast.items()" [class.err]="t.kind === 'err'">{{t.kind === 'ok' ? '✔' : t.kind === 'warn' ? '⚠' : 'ℹ'}} {{t.message}}</div>
+</div>
+<div class="noise"></div>

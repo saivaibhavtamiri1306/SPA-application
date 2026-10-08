@@ -1,0 +1,11 @@
+TRUSTVAULT CORE — START HERE
+
+1. Extract the ZIP.
+2. Open this trustvault-final folder in VS Code.
+3. Read README.md.
+4. For a quick local preview, run: npm install then npm run dev.
+5. For the real online site, create MongoDB Atlas variables in Netlify and deploy from GitHub.
+6. The production API is a Netlify Function, so your laptop does NOT need to stay on.
+
+Demo Admin: admin / admin / Admin / OTP 123456
+Demo User : priya / priya / General User / OTP 123456

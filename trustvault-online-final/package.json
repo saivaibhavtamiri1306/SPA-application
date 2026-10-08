@@ -1,0 +1,7 @@
+{
+  "name":"trustvault-online-final",
+  "private":true,
+  "scripts":{"build":"npm install --no-audit --no-fund && cd frontend && npm install --no-audit --no-fund && npm run build","dev":"netlify dev"},
+  "dependencies":{"@netlify/functions":"^3.1.10","bcryptjs":"^3.0.2","jsonwebtoken":"^9.0.2","mongodb":"^6.20.0"},
+  "devDependencies":{"netlify-cli":"^23.9.0"}
+}
