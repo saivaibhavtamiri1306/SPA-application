@@ -1,0 +1,26 @@
+<div class="auth-grid">
+  <section class="auth-hero reveal-up">
+    <div class="brand-lock"><span class="shield">⌾</span><span>TRUST<span>VAULT</span></span></div>
+    <p class="eyebrow">ADVANCED BACKGROUND VERIFICATION PLATFORM</p>
+    <h1>Build Trust.<br><span>Verify Faster.</span><br><em>Secure Better.</em></h1>
+    <p class="hero-copy">AI-assisted verification workflows, role-aware access controls, audit intelligence and a beautiful operator workspace — all in one secure demo.</p>
+    <div class="hero-pills"><span>Angular 18</span><span>Node.js API</span><span>JWT + MFA</span><span>Three.js</span></div>
+    <div class="hero-status"><i></i>SYSTEM STATUS: OPTIMAL <small>All demo services nominal</small></div>
+  </section>
+
+  <section class="auth-card-wrap">
+    <div class="auth-top"><div class="mini-brand">◇ TRUST<span>VAULT</span></div><select aria-label="Language" [value]="i18n.language" (change)="setLang($any($event.target).value)"><option value="en">English</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select></div>
+    <div class="glass-panel auth-card">
+      <div class="card-head"><div><p class="eyebrow">VER 4.9.2 // REQUIRE CREDENTIALS</p><h2>Auth_Protocol</h2></div><div class="live-dot"></div></div>
+      <div class="demo-box"><b>⚠ DEMO ENVIRONMENT</b><p>{{ t('warning') }}</p><div class="demo-grid"><button type="button" (click)="fill(demo.admin)"><strong>ADMIN</strong><span>admin / admin</span></button><button type="button" (click)="fill(demo.user)"><strong>GENERAL USER</strong><span>priya / priya</span></button></div><small>2FA demo code: <b>123456</b></small></div>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <label>{{ t('loginId') }}</label><input formControlName="userId" placeholder="Enter operator ID">
+        <label>{{ t('loginKey') }}</label><input type="password" formControlName="password" placeholder="Enter security key">
+        <label>{{ t('loginRole') }}</label><select formControlName="role"><option>General User</option><option>Admin</option></select>
+        <button class="cyber-btn primary" type="submit" [disabled]="form.invalid || busy">{{ busy ? 'PROCESSING API REQUEST...' : t('loginBtn') }} <span>→</span></button>
+      </form>
+      <div class="card-foot"><span>SECURE DEMO ACCESS</span><button type="button" (click)="fill(demo.admin)">ADMIN</button><button type="button" (click)="fill(demo.user)">USER</button></div>
+    </div>
+    <div class="auth-caption">Encrypted interface • Fictional data • Evaluation-ready demo</div>
+  </section>
+</div>

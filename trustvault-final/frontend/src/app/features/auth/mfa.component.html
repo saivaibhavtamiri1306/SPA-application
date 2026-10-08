@@ -1,0 +1,9 @@
+<div class="center-stage">
+  <div class="glass-panel mfa-card reveal-up">
+    <div class="mfa-logo">◉</div><p class="eyebrow">TRUSTVAULT // SECOND FACTOR</p><h2>Two-Factor <span>Verification</span></h2><p class="subcopy">Enter the 6-digit code to continue. This demo uses a fixed verification code.</p>
+    <div class="otp-row"><input maxlength="6" inputmode="numeric" [(ngModel)]="otp" (ngModelChange)="onOtpChange($event)" aria-label="OTP"></div>
+    <div class="code-preview"><span>DEMO CODE</span><b>123456</b><button type="button" (click)="demo()">USE CODE</button></div>
+    <div class="countdown"><div class="count-fill" [style.width.%]="seconds/30*100"></div></div><p class="count-text">{{ seconds ? 'CODE EXPIRES IN ' + seconds + 's' : 'CODE EXPIRED' }} <button *ngIf="!seconds" (click)="resend()">RESEND</button></p>
+    <button class="cyber-btn primary wide" type="button" [disabled]="otp.length!==6 || busy" (click)="verify()">{{busy?'VERIFYING...':'VERIFY IDENTITY'}} <span>→</span></button>
+  </div>
+</div>
