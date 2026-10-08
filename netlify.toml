@@ -1,0 +1,7 @@
+[build]
+  base = "trustvault-final/frontend"
+  command = "npm ci && npm run build -- --configuration production"
+  publish = "trustvault-final/frontend/dist/trustvault-core"
+
+[context.production.environment]
+  NODE_VERSION = "18"
