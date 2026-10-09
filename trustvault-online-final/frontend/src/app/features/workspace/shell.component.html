@@ -1,5 +1,57 @@
-<div class="tv-page"><tv-three-background></tv-three-background><div class="tv-grid"></div>
-  <aside class="sidebar glass"><div class="brand"><div class="brand-mark">🛡</div><div class="brand-copy"><b>TRUST<span style="color:#22d3ee">VAULT</span></b><small>SECURE VERIFICATION</small></div></div><nav class="nav-list"><ng-container *ngFor="let n of nav"><a *ngIf="visible(n[0])" [routerLink]="n[0]" routerLinkActive="active" class="nav-btn"><span style="font-size:16px;width:30px;text-align:center">{{n[1]}}</span><span class="nav-label">{{title(n[2])}}</span></a></ng-container></nav><button class="nav-btn" (click)="logout()" style="color:#ff6685"><span style="font-size:16px;width:30px;text-align:center">↪</span><span class="nav-label">{{title('logout')}}</span></button></aside>
-  <header class="topbar glass"><div><span class="kicker">{{auth.user?.role}}</span><span class="mono muted" style="font-size:9px;margin-left:12px">LIVE CONTROL PLANE</span></div><div class="top-right"><button class="pill" type="button" (click)="toggleOffline()" [class.offline]="api.isOfflineSimulation">● {{api.isOfflineSimulation?'OFFLINE DEMO':'SERVER UP'}}</button><select class="pill" [value]="i18n.lang()" (change)="i18n.setLang($any($event.target).value)"><option value="en">EN</option><option value="te">తెలుగు</option><option value="hi">हिन्दी</option></select><span class="pill">● ENCRYPTED CONNECTION</span><span class="pill">{{auth.user?.name}}</span></div></header>
-  <main class="main-shell"><router-outlet></router-outlet></main>
+<div class="relative z-10 flex overflow-hidden" style="height:calc(100vh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))">
+  
+  <tv-three-background></tv-three-background>
+  
+  <!-- Sidebar Navigation -->
+  <nav class="glass group m-4 mr-0 flex w-[80px] shrink-0 flex-col border-r-brand-400/30 bg-[#02040a]/80 py-6 transition-all duration-300 hover:w-64" style="z-index: 50;">
+    <div class="mb-8 flex items-center gap-4 px-5">
+      <div class="grid h-10 w-10 shrink-0 place-items-center rounded border border-cyan bg-cyan/20 shadow-[0_0_10px_rgba(34,211,238,0.3)]">
+        <svg class="h-6 w-6 text-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+      </div>
+      <span class="whitespace-nowrap text-xl font-bold tracking-wider text-white opacity-0 transition group-hover:opacity-100">TRUST<span class="cyan">VAULT</span></span>
+    </div>
+    
+    <div class="flex-1 space-y-2 px-2">
+      <ng-container *ngFor="let n of nav">
+        <a *ngIf="visible(n[3])" [routerLink]="n[0]" routerLinkActive="!border-transparent !bg-cyan/10 !text-cyan" class="nav-btn flex w-full items-center gap-4 rounded-lg px-3 py-3 transition-all duration-200 hover:translate-x-0.5 border border-transparent text-slate-500 hover:bg-white/5 hover:text-white">
+          <svg class="ml-1 h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="n[2]"></path></svg>
+          <span class="whitespace-nowrap font-mono text-sm opacity-0 transition group-hover:opacity-100">{{ title(n[1].toString()) }}</span>
+        </a>
+      </ng-container>
+    </div>
+    
+    <div class="px-4 pb-4">
+      <button (click)="logout()" class="flex w-full items-center gap-4 rounded-lg border border-transparent px-3 py-3 text-danger transition hover:border-danger/30 hover:bg-danger/10">
+        <svg class="ml-1 h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        <span class="whitespace-nowrap font-mono text-sm opacity-0 transition group-hover:opacity-100">{{ title('NAV.LOGOUT') }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <div class="flex h-full flex-1 flex-col overflow-hidden relative z-10">
+    <!-- Topbar -->
+    <header class="m-4 mb-0 flex h-16 items-center justify-end gap-3 px-6">
+      <button (click)="toggleOffline()" class="flex items-center gap-2 rounded-full border bg-black/40 px-3 py-2 font-mono text-[10px] tracking-widest backdrop-blur-md transition" [ngClass]="api.isOfflineSimulation ? 'border-danger/60 text-danger' : 'border-cyan/20 text-cyan hover:border-cyan/60'">
+        <span class="h-2 w-2 rounded-full" [ngClass]="api.isOfflineSimulation ? 'animate-pulse bg-danger' : 'bg-green'"></span>
+        {{ api.isOfflineSimulation ? 'SERVER DOWN' : 'SERVER UP' }}
+      </button>
+      
+      <select class="cursor-pointer rounded-full border border-cyan/20 bg-black/40 px-3 py-1.5 text-xs font-mono text-cyan outline-none backdrop-blur-md" [value]="i18n.lang()" (change)="i18n.setLang($any($event.target).value)">
+        <option value="en" class="bg-[#0a0f1e]">English</option>
+        <option value="te" class="bg-[#0a0f1e]">తెలుగు</option>
+        <option value="hi" class="bg-[#0a0f1e]">हिन्दी</option>
+      </select>
+      
+      <div class="flex items-center gap-3 rounded-full border border-cyan/20 bg-black/40 px-4 py-2 backdrop-blur-md">
+        <span class="h-2 w-2 animate-pulse rounded-full" [ngClass]="api.isOfflineSimulation ? 'bg-amber-400' : 'bg-cyan'"></span>
+        <span class="font-mono text-xs tracking-widest" [ngClass]="api.isOfflineSimulation ? 'text-amber-300' : 'text-cyan'">{{ api.isOfflineSimulation ? 'OFFLINE MODE · CACHED DATA' : 'ENCRYPTED CONNECTION' }}</span>
+      </div>
+    </header>
+    
+    <!-- Router View -->
+    <main class="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>
