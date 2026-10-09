@@ -1,21 +1,117 @@
 <div class="tv-page login-layout">
-  <tv-three-background></tv-three-background><div class="tv-grid"></div>
-  <section class="hero"><div class="hero-inner route-in">
-    <div class="brand" style="padding:0"><div class="brand-mark">🛡</div><div class="brand-copy" style="opacity:1"><b>TRUST<span style="color:#22d3ee">VAULT</span></b><small>SECURE TODAY. TRUSTED TOMORROW</small></div></div>
-    <div class="kicker" style="margin-top:35px">Advanced Background Verification Platform</div>
-    <h1>Build Trust<br><b>Verify Faster</b><br><span>Secure Better</span></h1>
-    <p class="sub" style="max-width:560px">A high-fidelity verification workspace demo built for secure recruitment workflows, access control, auditability and modern operator experience.</p>
-    <ul class="hero-list"><li>▣ <b>ROLE-AWARE ACCESS</b> &nbsp; precise data visibility</li><li>▣ <b>ASYNC API PROCESSING</b> &nbsp; realistic network delays</li><li>▣ <b>VERIFICATION PIPELINE</b> &nbsp; multi-stage workflows</li></ul>
-  </div></section>
-  <section class="login-side"><div class="glass login-card route-in">
-    <div class="kicker">AUTH_PROTOCOL</div><h2 style="margin:7px 0 4px;font-size:29px">{{step===1?'Login to Your Account':step===2?'Two-Factor Authentication':'Access Granted'}}</h2>
-    <p class="sub" style="font-size:12px;margin-top:0">{{step===1?'Secure • Scalable • Reliable':step===2?'Enter the 6-digit demo code to continue.':'Decrypting vault contents...'}}</p>
-    <ng-container *ngIf="step===1">
-      <div class="demo-box"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b class="mono" style="font-size:10px;color:#fcd34d">⚠ DEMO ENVIRONMENT</b><button type="button" (click)="fill(demo.admin)" class="demo-btn">ADMIN</button><button type="button" (click)="fill(demo.user)" class="demo-btn">USER</button></div></div>
-      <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid"><div class="field"><label>Operator ID</label><input class="cyber-input" formControlName="id" placeholder="admin"></div><div class="field"><label>Password</label><input type="password" class="cyber-input" formControlName="password" placeholder="••••••"></div><div class="field"><label>Role</label><select class="cyber-input" formControlName="role"><option value="General User">General User</option><option value="Admin">Admin</option></select></div><button type="submit" class="btn-primary" [disabled]="busy">{{busy?'VERIFYING...':'AUTHENTICATE'}}</button></form>
-      <div *ngIf="error" class="error-msg">{{error}}</div>
-    </ng-container>
-    <ng-container *ngIf="step===2"><div class="otp-row" style="margin:26px 0 13px"><div class="otp-box" *ngFor="let n of [0,1,2,3,4,5]" [class.active]="otp.length===n">{{otp[n]||''}}</div></div><input type="text" inputmode="numeric" maxlength="6" [value]="otp" (input)="otpInput($event)" autofocus><div class="otp-footer" style="margin-top:20px"><button type="button" (click)="resend()" [disabled]="cooldown>0" class="btn-secondary">RESEND CODE {{cooldown>0 ? '(' + cooldown + 's)' : ''}}</button></div><div *ngIf="error" class="error-msg">{{error}}</div></ng-container>
-    <ng-container *ngIf="step===3"><div class="scan-card" style="margin-top:18px"><div class="scanline"></div><div class="kicker">BIOMETRIC VERIFICATION</div><div class="scan-ring"><div class="scan-dot"></div></div></div></ng-container>
-  </div></section>
+  <tv-three-background></tv-three-background>
+  <div class="tv-grid"></div>
+
+  <!-- Left Side: Hero -->
+  <section class="hero">
+    <div class="hero-inner route-in">
+      <div class="brand">
+        <div class="brand-mark">🛡</div>
+        <div class="brand-copy"><b>TRUST<span class="cyan">VAULT</span></b><small>SECURE TODAY. TRUSTED TOMORROW</small></div>
+      </div>
+      <div class="kicker" style="margin-top:35px">Advanced Background Verification Platform</div>
+      <h1>Build Trust<br><b>Verify Faster</b><br><span>Secure Better</span></h1>
+      <p class="sub" style="max-width:560px; margin-top:20px;">
+        A high-fidelity verification workspace demo built for secure recruitment workflows, access control, auditability and modern operator experience.
+      </p>
+      <ul class="hero-list">
+        <li>▣ <b>ROLE-AWARE ACCESS</b> &nbsp; precise data visibility</li>
+        <li>▣ <b>ASYNC API PROCESSING</b> &nbsp; realistic network delays</li>
+        <li>▣ <b>VERIFICATION PIPELINE</b> &nbsp; multi-stage workflows</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Right Side: Login Panel -->
+  <section class="login-side">
+    <div class="glass login-card route-in">
+      
+      <!-- Headers -->
+      <div class="kicker" [ngClass]="{'danger': step === 3}">
+        {{ step === 3 ? 'BIOMETRIC SCAN' : 'AUTH_PROTOCOL' }}
+      </div>
+      <h2 class="title" style="margin:7px 0 4px;font-size:29px">
+        {{ step === 1 ? 'Login to Your Account' : step === 2 ? 'Two-Factor Authentication' : step === 3 ? 'Identity Verification' : 'Access Granted' }}
+      </h2>
+      <p class="sub" style="font-size:12px;margin-top:0;margin-bottom:24px;">
+        {{ step === 1 ? 'Secure • Scalable • Reliable' : step === 2 ? 'Enter the 6-digit demo code to continue.' : step === 3 ? 'Please look directly into the scanner.' : 'Decrypting vault contents...' }}
+      </p>
+
+      <!-- STEP 1: Credentials Form -->
+      <ng-container *ngIf="step === 1">
+        <div class="demo-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <b class="mono" style="font-size:10px;color:#fcd34d">⚠ DEMO ENVIRONMENT</b>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button type="button" (click)="fill(demo.admin)" class="demo-btn" style="flex:1;">ADMIN</button>
+            <button type="button" (click)="fill(demo.user)" class="demo-btn" style="flex:1;">USER</button>
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
+          <div class="field">
+            <label>Operator ID</label>
+            <input class="cyber-input" formControlName="id" placeholder="admin">
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input type="password" class="cyber-input" formControlName="password" placeholder="••••••">
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <select class="cyber-input" formControlName="role">
+              <option value="General User">General User</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+          <button type="submit" class="cyber-btn" [disabled]="busy">
+            {{ busy ? 'VERIFYING...' : 'AUTHENTICATE' }}
+          </button>
+        </form>
+        <div *ngIf="error" class="error-msg">{{error}}</div>
+      </ng-container>
+
+      <!-- STEP 2: OTP / MFA -->
+      <ng-container *ngIf="step === 2">
+        <div style="position:relative; width:max-content; margin: 0 auto;">
+          <div class="otp-row" style="margin:10px 0 20px">
+            <div class="otp-box" *ngFor="let n of [0,1,2,3,4,5]" [class.active]="otp.length === n">
+              {{ otp[n] || '' }}
+            </div>
+          </div>
+          <input type="text" style="position:absolute; inset:0; opacity:0; cursor:text;" inputmode="numeric" maxlength="6" [value]="otp" (input)="otpInput($event)" autofocus>
+        </div>
+        
+        <div style="text-align:center; margin-top:20px">
+          <button type="button" (click)="resend()" [disabled]="cooldown > 0" class="cyber-btn secondary">
+            RESEND CODE {{ cooldown > 0 ? '(' + cooldown + 's)' : '' }}
+          </button>
+        </div>
+        <div *ngIf="error" class="error-msg" style="text-align:center;">{{error}}</div>
+      </ng-container>
+
+      <!-- STEP 3: Biometric Scan -->
+      <ng-container *ngIf="step === 3">
+        <div class="scan-card">
+          <div class="scanline-fx"></div>
+          <div class="scan-ring"></div>
+          <div class="terminal-text">
+            <div class="pulse-slow">_</div>
+            <div *ngFor="let log of logs" style="margin-bottom:4px;">{{ log }}</div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- STEP 4: Success Granted -->
+      <ng-container *ngIf="step === 4">
+        <div style="text-align:center; padding: 30px 0;">
+          <div style="width:70px; height:70px; border-radius:50%; background:rgba(34,211,238,0.2); display:grid; place-items:center; margin: 0 auto 20px;">
+            <svg style="width:36px; height:36px; color:#22d3ee;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </section>
 </div>
