@@ -1,3 +1,87 @@
-<div class="page-pad route-in"><div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin-bottom:20px"><div><div class="kicker">ADMIN CONTROL PLANE</div><h1 class="title">Manage <span>Users</span></h1><p class="sub">Create, edit, suspend and remove operators stored in the online database.</p></div><button class="cyber-btn" (click)="create()">+ Register Operator</button></div>
-<section *ngIf="showForm" class="glass card" style="margin-bottom:16px"><div class="card-head"><div><h3>{{editingId?'Edit Operator':'Register New Operator'}}</h3><small>DATABASE ENTITY</small></div></div><form [formGroup]="form" (ngSubmit)="save()" class="section-grid"><div class="field"><label>Operator ID</label><input class="cyber-input" formControlName="id" placeholder="meera"></div><div class="field"><label>Full Name</label><input class="cyber-input" formControlName="name" placeholder="Meera Iyer"></div><div class="field"><label>Role</label><select class="cyber-input" formControlName="role"><option>General User</option><option>Admin</option></select></div><div class="field"><label>Access Level</label><select class="cyber-input" formControlName="accessLevel"><option>Alpha (Public)</option><option>Beta (Internal)</option><option>Omega (Full)</option></select></div><div style="grid-column:1/-1;display:flex;gap:8px"><button class="cyber-btn" type="submit">{{editingId?'Save Changes':'Create Operator'}}</button><button class="cyber-btn ghost" type="button" (click)="cancel()">Cancel</button></div></form></section>
-<section class="glass card"><div class="table-wrap"><table class="table"><thead><tr><th>User ID</th><th>Name</th><th>Role</th><th>Access</th><th>Status</th><th>Actions</th></tr></thead><tbody><tr *ngFor="let u of users"><td>{{u.id}}</td><td>{{u.name}}</td><td>{{u.role}}</td><td>{{u.accessLevel}}</td><td><span class="badge green" *ngIf="u.status==='Active'">ACTIVE</span><span class="badge red" *ngIf="u.status!=='Active'">SUSPENDED</span></td><td><button class="cyber-btn small ghost" (click)="edit(u)">Edit</button> <button class="cyber-btn small" (click)="toggle(u)">{{u.status==='Active'?'Suspend':'Restore'}}</button> <button class="cyber-btn small danger" *ngIf="u.id!=='admin'" (click)="remove(u)">Delete</button></td></tr></tbody></table><div *ngIf="loading&&!users.length" class="empty">Syncing with secure database…</div></div></section></div>
+<div class="mx-auto max-w-6xl p-4 lg:p-8 route-in">
+  <div class="flex items-start justify-between gap-4 mb-8">
+    <div>
+      <h2 class="mb-1 text-3xl font-bold">User <span class="font-light text-cyan">Management</span></h2>
+      <p class="font-mono text-sm text-slate-400">Administrative control over DB entities. <span *ngIf="loading" class="ml-2 animate-pulse text-cyan">Syncing with API...</span></p>
+    </div>
+    <button class="cyber-btn shrink-0 w-auto" (click)="toggleReg()">+ Register Operator</button>
+  </div>
+
+  <!-- Registration Form -->
+  <form *ngIf="showReg" [formGroup]="form" (ngSubmit)="submit()" class="glass animate-fade-in-up mb-6 grid gap-4 p-6 md:grid-cols-4">
+    <div>
+      <label class="mb-2 block font-mono text-xs uppercase tracking-widest text-slate-400">Operator ID</label>
+      <div class="relative">
+        <input class="input-cyber pr-10" formControlName="userId" placeholder="e.g. meera" (input)="onIdInput()" autocomplete="off">
+        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-sm">
+          <span *ngIf="checkingId" class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-cyan border-t-transparent"></span>
+          <span *ngIf="idAvailable" class="text-emerald-400">✔</span>
+        </span>
+      </div>
+      <p class="mt-1 font-mono text-xs" [ngClass]="idAvailable ? 'text-emerald-400' : form.get('userId')?.invalid && form.get('userId')?.touched ? 'text-amber-300' : 'text-slate-400'">
+        {{ checkingId ? 'Checking...' : idAvailable ? 'Available' : form.get('userId')?.invalid && form.get('userId')?.touched ? '3-20 letters, numbers or _' : '' }}
+      </p>
+    </div>
+
+    <div>
+      <label class="mb-2 block font-mono text-xs uppercase tracking-widest text-slate-400">Full name</label>
+      <input class="input-cyber" formControlName="name" placeholder="Meera Iyer">
+    </div>
+
+    <div>
+      <label class="mb-2 block font-mono text-xs uppercase tracking-widest text-slate-400">Role</label>
+      <select class="input-cyber appearance-none bg-[#0a0f1e]" formControlName="role">
+        <option>General User</option>
+        <option>Admin</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="mb-2 block font-mono text-xs uppercase tracking-widest text-slate-400">Access level</label>
+      <select class="input-cyber appearance-none bg-[#0a0f1e]" formControlName="accessLevel">
+        <option>Alpha (Public)</option>
+        <option>Beta (Internal)</option>
+        <option>Omega (Full)</option>
+      </select>
+    </div>
+
+    <div class="flex items-center justify-between md:col-span-4 mt-2">
+      <p class="font-mono text-xs text-slate-500">The new operator signs in with the User ID as the key (demo).</p>
+      <button type="submit" class="cyber-btn w-auto" [disabled]="form.invalid || !idAvailable || form.disabled">
+        {{ form.disabled ? 'Creating...' : 'Create operator' }}
+      </button>
+    </div>
+  </form>
+
+  <!-- Users Table -->
+  <div class="glass overflow-hidden animate-fade-in-up">
+    <table class="w-full text-left font-mono text-sm">
+      <thead class="border-b border-cyan/30 bg-white/5 text-xs uppercase text-[#67e8f9]">
+        <tr>
+          <th class="p-5">User ID</th>
+          <th class="p-5">Name</th>
+          <th class="p-5">Role</th>
+          <th class="p-5">Status</th>
+          <th class="p-5 text-right">DB Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        <tr *ngFor="let u of users" class="transition hover:bg-cyan/5">
+          <td class="p-5 text-slate-400">{{ u.id }}</td>
+          <td class="p-5 font-sans font-medium text-white">{{ u.name }}</td>
+          <td class="p-5 text-cyan">{{ u.role }}</td>
+          <td class="p-5">
+            <span class="rounded border px-2 py-1 text-[10px] uppercase" [ngClass]="u.status === 'Active' ? 'border-emerald-500/50 text-emerald-400' : 'border-danger/50 text-danger'">
+              {{ u.status }}
+            </span>
+          </td>
+          <td class="p-5 text-right">
+            <button (click)="toggleStatus(u)" [disabled]="loading || u.id === 'admin'" class="rounded border border-white/20 px-3 py-1 text-xs transition hover:border-cyan hover:text-cyan disabled:opacity-30 disabled:hover:border-white/20 disabled:hover:text-white">
+              {{ u.status === 'Active' ? 'Suspend Access' : 'Restore Access' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
