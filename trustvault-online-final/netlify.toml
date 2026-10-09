@@ -18,8 +18,3 @@
   from = "/*"
   to = "/index.html"
   status = 200
-
-[dev]
-  command = "cd frontend && npm start"
-  targetPort = 4200
-  port = 8888
