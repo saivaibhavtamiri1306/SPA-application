@@ -31,11 +31,19 @@ Add new project
 
 ## 3. Build settings
 
-The included `netlify.toml` already contains the intended settings.
+The repository-root `netlify.toml` explicitly sets the base directory to
+`trustvault-online-final`, the committed folder containing the application. This
+keeps Netlify from using an invalid absolute base directory such as `/opt/build`.
+The build command, publish directory, and functions directory are relative to
+that application folder. The application's own `netlify.toml` also supports
+uploading the application folder as a standalone repository.
 
 Use:
 
 ```text
+Base directory (for this repository layout):
+trustvault-online-final
+
 Build command:
 npm install --no-audit --no-fund && cd frontend && npm install --no-audit --no-fund && npm run build
 
