@@ -1,1 +1,60 @@
-<div class="page-pad route-in"><div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin-bottom:20px"><div><div class="kicker">CRYPTOGRAPHIC EVENT STREAM</div><h1 class="title">Audit <span>Ledger</span></h1><p class="sub">10,000 deterministic audit events with virtualized rendering and optional SHA-256 chain verification in a Web Worker.</p></div><button class="cyber-btn" [disabled]="hashing||!events.length" (click)="verifyChain()">{{hashing?'HASHING… '+hashProgress+'%':'Verify chain in Web Worker'}}</button></div><section class="glass card"><div class="audit-scroll"><div class="audit-row header"><span>#</span><span>Time</span><span>Event</span><span>User / IP</span><span>Hash</span></div><div class="audit-row" *ngFor="let e of events;let i=index"><span>{{e.i}}</span><span>{{e.time}}</span><span [class.danger]="rowClass(e)==='danger'">{{e.evt}}</span><span>{{e.user}} · {{e.ip}}</span><span class="hash">{{e.hash ? (e.hash|slice:0:18)+'…' : 'not hashed'}}</span></div></div><div style="display:flex;justify-content:space-between;gap:12px;margin-top:12px" class="mono muted"><span>{{events.length.toLocaleString()}} events</span><span *ngIf="hashMs">✔ {{hashMs}} ms</span></div></section></div>
+<div class="mx-auto max-w-6xl p-4 lg:p-8 route-in">
+  <div class="mb-8">
+    <h2 class="mb-1 text-3xl font-bold">Audit <span class="font-light text-cyan">Ledger</span></h2>
+    <p class="font-mono text-sm text-slate-400">Cryptographically secure, append-only event log.</p>
+  </div>
+
+  <div class="glass overflow-hidden border-cyan/20">
+    <div class="flex items-center justify-between border-b border-cyan/30 bg-[#164e63]/30 p-4">
+      <span class="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-cyan">
+        <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Ledger Integrity Confirmed
+      </span>
+      <button class="rounded border border-white/20 px-3 py-1 font-mono text-xs text-slate-400 hover:text-white">Export CSV</button>
+    </div>
+    
+    <div *ngFor="let l of staticLogs" class="flex items-center border-b border-white/5 p-4 font-mono text-sm transition hover:bg-white/5" [ngClass]="l[4] ? 'border-l-2 border-l-danger bg-danger/10' : 'border-l-2 border-l-transparent'">
+      <div class="w-32 text-xs text-slate-500">{{ currentTime }}</div>
+      <div class="w-40 font-bold" [ngClass]="l[4] ? 'text-danger' : l[0] === 'SYS_BOOT' ? 'text-cyan' : 'text-emerald-400'">{{ l[0] }}</div>
+      <div class="flex-1 text-slate-300">USR: {{ l[1] }} <span class="mx-2 text-slate-500">|</span> IP: {{ l[2] }}</div>
+      <div class="flex items-center gap-2 rounded border border-white/5 bg-black/40 px-2 py-1 text-xs text-slate-500">
+        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> {{ l[3] }}
+      </div>
+    </div>
+  </div>
+
+  <div class="glass mt-8 overflow-hidden border-cyan/20">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-cyan/30 bg-[#164e63]/30 p-4">
+      <div>
+        <p class="font-mono text-xs uppercase tracking-widest text-cyan">Live Event Stream · <span>{{ events.length | number }}</span> events</p>
+        <p class="font-mono text-[10px] text-slate-500">{{ vinfo }}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div *ngIf="hashing" class="h-1.5 w-40 overflow-hidden rounded bg-white/10">
+          <div class="h-full bg-cyan transition-all duration-300" [style.width.%]="hashProgress"></div>
+        </div>
+        <span *ngIf="hashResult" class="font-mono text-xs text-emerald-400">{{ hashResult }}</span>
+        <button class="cyber-btn w-auto sm" [disabled]="hashing" (click)="verifyChain()">
+          {{ hashing ? 'Hashing…' : 'Verify chain in Web Worker' }}
+        </button>
+      </div>
+    </div>
+    
+    <!-- Virtual Scroll Implementation -->
+    <div #scrollHost class="block h-96 overflow-y-auto" (scroll)="onScroll($event)">
+      <div [style.height.px]="totalHeight" class="relative">
+        <div class="absolute left-0 right-0 top-0" [style.top.px]="offsetY">
+          
+          <div *ngFor="let e of visibleEvents" class="flex h-12 items-center border-b border-white/5 px-4 font-mono text-xs transition hover:bg-white/5">
+            <span class="w-14 text-slate-600">#{{ e.i }}</span>
+            <span class="w-44 text-slate-500">{{ e.time }}</span>
+            <span class="w-36 font-bold" [ngClass]="e.evt === 'AUTH_FAIL' || e.evt === 'FIREWALL_BLOCK' ? 'text-danger' : 'text-emerald-400'">{{ e.evt }}</span>
+            <span class="flex-1 text-slate-300">{{ e.user }} <span class="text-slate-600">·</span> {{ e.ip }}</span>
+            <span class="rounded border border-white/5 bg-black/40 px-2 py-1 text-[10px] text-slate-500">{{ e.hash ? (e.hash | slice:0:14) + '…' : 'not hashed yet' }}</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
