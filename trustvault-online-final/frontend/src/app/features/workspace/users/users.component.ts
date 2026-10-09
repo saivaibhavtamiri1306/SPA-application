@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
-import { User, UserRole } from '../../../core/models/api.models';
+import { User, UserRole, AccessLevel } from '../../../core/models/api.models';
 import { ToastService } from '../../../shared/toast.service';
 
 @Component({
@@ -80,7 +80,7 @@ export class UsersComponent implements OnInit {
       id: val.userId!,
       name: val.name!,
       role: val.role! as UserRole,
-      accessLevel: val.accessLevel!,
+      accessLevel: val.accessLevel! as AccessLevel, // FIX: Cast directly to strictly typed AccessLevel
       status: 'Active'
     };
 
